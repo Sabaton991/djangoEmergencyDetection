@@ -34,7 +34,6 @@ class JournalDb:
                      "url_camera": journal['url_camera']} for journal in result]
                 print(list_result)
                 return list_result, number_of_pages
-                #     return None
             except Exception as e:
                 print(e)
         else:
@@ -93,11 +92,6 @@ class JournalDb:
                             4: self.four_filter}
                 selection = filters1.get(len(data['list_filters']))(data)
                 print(selection)
-                # filters = {"firetruck".upper(): Q(id_car=4),
-                #            "police".upper(): Q(id_car=3),
-                #            "ambulance".upper(): Q(id_car=2),
-                #            "car".upper(): Q(id_car=1),
-                #            "special".upper(): Q(id_car__gte=1)}
                 filter_records = Journal.objects.filter(selection).order_by('-opened_at').select_related('id_camera', 'id_car')\
                     .values('opened_at', 'id_car', 'id_camera', url_camera=F('id_camera__url_camera'),
                                        car_description=F('id_car__description'),
@@ -131,9 +125,7 @@ class JournalDb:
             try:
                 Journal.objects.create(id_camera=Camera.objects.get(id_camera=id_camera),
                                        id_car=Cars.objects.get(id_car=id_car), opened_at=datetime.datetime.now())
-                commit()
                 return True
             except Exception as err:
-                rollback()
                 print(err)
                 return False
