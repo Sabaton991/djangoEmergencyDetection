@@ -25,7 +25,7 @@ class CameraDb:
             rows = Camera.objects.count()
             print(rows)
             number_of_pages = {"number_of_pages": math.ceil(rows/11)}
-            if cameras is not None:
+            if len(cameras) > 0:
                 return cameras, number_of_pages
             else:
                 return None
@@ -36,14 +36,14 @@ class CameraDb:
             print(page_n)
             page_n -= 1
             try:
-                allRecord = list(Camera.objects.order_by('id_camera').select_related('id_barrier')
+                all_record = list(Camera.objects.order_by('id_camera').select_related('id_barrier')
                                  .values('id_camera', 'url_camera', 'id_barrier', url_barrier=F('id_barrier__url_barrier'),
                                          camera_description=F('description'),
                                          barrier_description=F('id_barrier__name'))[page_n*10:(10+(page_n*10))])
                 rows = Camera.objects.filter(id_barrier__isnull=False).count()
                 number_of_pages = {"number_of_pages": math.ceil(rows/10)}
-                if allRecord is not None:
-                    return allRecord, number_of_pages
+                if len(all_record) > 0:
+                    return all_record, number_of_pages
                 else:
                     return None
             except Exception as e:
@@ -63,10 +63,8 @@ class CameraDb:
             try:
                 Camera.objects.create(url_camera=url_camera, id_barrier=Barrier.objects.get(id_barrier=id_barrier),
                                       description=description)
-                commit()
                 return True
             except Exception as err:
-                rollback()
                 print(err)
                 return False
 
@@ -79,7 +77,6 @@ class CameraDb:
         if id_camera is not None:
             try:
                 Camera.objects.filter(id_camera=id_camera).delete()
-                commit()
                 return True
             except Exception as err:
                 rollback()
@@ -89,10 +86,8 @@ class CameraDb:
     def update_camera(self, id_camera, fetched_data):
         if id_camera and fetched_data is not None:
             try:
-                a = Camera.objects.filter(id_camera=id_camera).update(**fetched_data)
-                commit()
+                Camera.objects.filter(id_camera=id_camera).update(**fetched_data)
                 return True
             except Exception as err:
-                rollback()
                 print(err)
                 return False

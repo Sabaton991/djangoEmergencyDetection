@@ -38,10 +38,10 @@ class BarrierDb:
                 return False
 
     def search_barrier(self, url_barrier):
-        oneBarrier = None
+        one_barrier = None
         if url_barrier is not None:
-            oneBarrier = Barrier.objects.values('id_barrier').filter(url_barrier=url_barrier).first()
-        if oneBarrier is not None:
-            return oneBarrier['id_barrier']
+            one_barrier = Barrier.objects.values('id_barrier').filter(url_barrier=url_barrier).first()
+        if one_barrier is not None:
+            return one_barrier['id_barrier']
         else:
             return None
